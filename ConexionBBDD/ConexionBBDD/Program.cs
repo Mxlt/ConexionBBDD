@@ -10,12 +10,16 @@ namespace ConexionBBDD
 {
     class Program
     {
+       static String connectionString = ConfigurationManager.ConnectionStrings["conexionVarios"].ConnectionString;
+       static SqlConnection conexion = new SqlConnection(connectionString);
+       static string cadena;
+       static  SqlCommand comando;
+
         static void Main(string[] args)
         {
-            String connectionString = ConfigurationManager.ConnectionStrings["conexionEmpresa"].ConnectionString;
+            String connectionString = ConfigurationManager.ConnectionStrings["conexionVarios"].ConnectionString;
             SqlConnection conexion = new SqlConnection(connectionString);
-            string cadena;
-            SqlCommand comando;
+
 
             //INSERTAMOS UN REGISTRO A LA TABLA LIBRERIA
             conexion.Open();
@@ -35,22 +39,41 @@ namespace ConexionBBDD
 
             conexion.Close();
 
-            //HACEMOS UNA CONSULTA A LA TABLA LIBRERIA
+            ////HACEMOS UNA CONSULTA A LA TABLA LIBRERIA
             conexion.Open();
-            cadena = "SELECT * FROM LIBRERIA";
+            cadena = "SELECT max(TEMA) AS 'TEMA' FROM LIBRERIA WHERE TEMA LIKE '%g%'";
             comando = new SqlCommand(cadena, conexion);
             SqlDataReader registros = comando.ExecuteReader();
+
             while (registros.Read())
             {
-                Console.WriteLine(registros["TEMA"].ToString() + "\t" + registros["ESTANTE"].ToString() + "\t" + registros["EJEMPLARES"].ToString());
-                Console.WriteLine();
+                Console.WriteLine(registros[0].ToString() + "\t" + registros[1].ToString() + "\t" + registros["EJEMPLARES"].ToString());
             }
 
             Console.ReadLine();
             conexion.Close();
 
+            int tema = 4;
+
+            conexion.Open();
+            cadena = "SELECT * FROM LIBRERIA WHERE TEMA = " + tema ;
+            comando = new SqlCommand(cadena, conexion);
+            registros = comando.ExecuteReader();
+
+            if  (registros.Read())
+            {
+                Console.WriteLine("Existe el registro");
+            }else
+            {
+                Console.WriteLine("El registro no existe");
+            }
+
+            Console.ReadLine();
+            conexion.Close();
+            registros.Close();
 
         }
+
     }
 }
 
